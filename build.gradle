@@ -1,0 +1,50 @@
+subprojects {
+    apply plugin: 'groovy'
+    apply plugin: 'maven-publish'
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                from components.java
+            }
+        }
+    }
+
+    group 'dk.sunepoulsen.devtools'
+    version '0.1.0-SNAPSHOT'
+
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+
+    task allWrappers(type: Wrapper) {
+        gradleVersion = '6.5'
+    }
+
+    dependencies {
+        // Lombok
+        implementation "org.codehaus.groovy:groovy-all:${project.property('groovy-all.version')}"
+
+        // Lombok
+        compileOnly "org.projectlombok:lombok:${project.property('lombok.version')}"
+        annotationProcessor "org.projectlombok:lombok:${project.property('lombok.version')}"
+
+        // Logging
+        implementation "ch.qos.logback:logback-classic:${project.property('logback.version')}"
+        implementation "org.slf4j:log4j-over-slf4j:${project.property('log4j-over-slf4j.version')}"
+
+        // JUnit
+        testCompile group: 'junit', name: 'junit', version: "${project.property('junit.version')}"
+
+        // Spock
+        testImplementation localGroovy() // Note: using the groovy implementation shipped with gradle
+        testImplementation "org.spockframework:spock-core:${project.property('spock-core.version')}"
+        testImplementation "cglib:cglib-nodep:${project.property('cglib-nodep.version')}"
+        testImplementation "org.objenesis:objenesis:${project.property('objenesis.version')}"
+    }
+
+}

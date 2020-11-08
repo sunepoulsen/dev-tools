@@ -1,0 +1,6 @@
+rootProject.name = 'devtools'
+
+include 'gbash-core'
+include 'scripts'
+include 'scripts:dt-base64'
+
