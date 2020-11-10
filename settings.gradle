@@ -3,4 +3,6 @@ rootProject.name = 'devtools'
 include 'gbash-core'
 include 'scripts'
 include 'scripts:dt-base64'
+include 'scripts:dt-xml'
+findProject(':scripts:dt-xml')?.name = 'dt-xml'
 
