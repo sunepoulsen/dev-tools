@@ -10,13 +10,16 @@ package dk.sunepoulsen.devtools.gbash.core.cli
  * </p>
  */
 class CliInterpreter {
-    List<SubCommandGroup> groups
+    List<SubCommandGroup> groups = []
 
     SubCommandDef findSubCommand(String name) {
         SubCommandDef result
 
-        groups.each {SubCommandGroup group ->
-            SubCommandDef subCommandDef = group.subCommands.find {it.name() == name }
+        groups.each { SubCommandGroup group ->
+            SubCommandDef subCommandDef = group.getSubCommands().find {
+                it.name() == name
+            }
+
             if (subCommandDef == null) {
                 return
             }

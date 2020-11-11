@@ -13,5 +13,5 @@ class SubCommandGroup {
     /**
      * List of sub commands in the group.
      */
-    List<SubCommandDef> subCommands
+    List<SubCommandDef> subCommands = []
 }
