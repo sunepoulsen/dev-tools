@@ -20,7 +20,7 @@ interface SubCommandDef {
     /**
      * CliBuilder to parse the options and arguments to the sub command
      */
-    CliBuilder cliBuilder()
+    CliBuilder cliBuilder() throws CliException
 
-    SubCommandExecutor createExecutor(OptionAccessor optionAccessor)
+    SubCommandExecutor createExecutor(OptionAccessor optionAccessor) throws CliException
 }

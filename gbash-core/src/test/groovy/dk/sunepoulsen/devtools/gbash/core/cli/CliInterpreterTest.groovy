@@ -31,12 +31,12 @@ class CliInterpreterTest extends Specification {
 
     void "Parsing empty list of arguments"() {
         when: 'parse empty list of arguments'
-            SubCommandExecutor result = cliInterpreter.parse([])
+            cliInterpreter.parse([])
 
         then:
             0 * container._
             0 * subCommandDef._
-            result == null
+            thrown(CliException)
     }
 
     void "Parse sub command successfully"() {
@@ -50,14 +50,36 @@ class CliInterpreterTest extends Specification {
             result == subCommandExecutor
     }
 
-    void "Parse sub command with illegal arguments"() {
+    void "Parse sub command with bad executor"() {
         when:
-            SubCommandExecutor result = cliInterpreter.parse(['cmd'])
+            cliInterpreter.parse(['cmd'])
 
         then:
             1 * container.findSubCommand(_) >> subCommandDef
             1 * subCommandDef.cliBuilder() >> new CliBuilder()
-            1 * subCommandDef.createExecutor(_) >> subCommandExecutor
-            result == subCommandExecutor
+            1 * subCommandDef.createExecutor(_) >> { throw new CliException('message') }
+            thrown(CliException)
+    }
+
+    void "Parse arguments with unknown sub command"() {
+        when:
+            cliInterpreter.parse(['cmd'])
+
+        then:
+            1 * container.findSubCommand(_) >> null
+            0 * subCommandDef.cliBuilder()
+            0 * subCommandDef.createExecutor(_)
+            thrown(CliException)
+    }
+
+    void "Parse no arguments"() {
+        when:
+            cliInterpreter.parse([])
+
+        then:
+            0 * container.findSubCommand(_)
+            0 * subCommandDef.cliBuilder()
+            0 * subCommandDef.createExecutor(_)
+            thrown(CliException)
     }
 }

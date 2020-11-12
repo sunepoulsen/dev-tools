@@ -33,12 +33,12 @@ class CliInterpreter {
         }
 
         if (args.empty) {
-            return null
+            throw new CliException('Command is missing')
         }
 
         SubCommandDef subCommandDef = container.findSubCommand(args[0])
         if (subCommandDef == null) {
-            throw new UnsupportedOperationException('Unknown subcommand is not implemented!')
+            throw new CliException("Command '${args[0]}' is unknown")
         }
 
         List<String> subArgs = args

@@ -21,12 +21,12 @@ class HelpSubCommandDef implements SubCommandDef {
     }
 
     @Override
-    CliBuilder cliBuilder() {
+    CliBuilder cliBuilder() throws CliException {
         return new CliBuilder()
     }
 
     @Override
-    SubCommandExecutor createExecutor(OptionAccessor optionAccessor) {
+    SubCommandExecutor createExecutor(OptionAccessor optionAccessor) throws CliException {
         throw new UnsupportedOperationException('Not implemented yet!')
     }
 }
