@@ -4,10 +4,10 @@ import groovy.cli.picocli.CliBuilder
 import groovy.cli.picocli.OptionAccessor
 
 class HelpSubCommandDef implements SubCommandDef {
-    CliInterpreter cliInterpreter
+    SubCommandContainer subCommandContainer
 
-    HelpSubCommandDef(CliInterpreter cliInterpreter) {
-        this.cliInterpreter = cliInterpreter
+    HelpSubCommandDef(SubCommandContainer subCommandContainer) {
+        this.subCommandContainer = subCommandContainer
     }
 
     @Override

@@ -1,5 +1,7 @@
 package dk.sunepoulsen.devtools.gbash.core.cli
 
+import groovy.cli.picocli.OptionAccessor
+
 /**
  * Interpreter that supports usage of subcommands to a script.
  * <p>
@@ -10,28 +12,38 @@ package dk.sunepoulsen.devtools.gbash.core.cli
  * </p>
  */
 class CliInterpreter {
-    List<SubCommandGroup> groups = []
+    SubCommandContainer container
 
-    SubCommandDef findSubCommand(String name) {
-        SubCommandDef result
+    CliInterpreter() {
+        this.container = new SubCommandContainer()
+    }
 
-        groups.each { SubCommandGroup group ->
-            SubCommandDef subCommandDef = group.getSubCommands().find {
-                it.name() == name
-            }
-
-            if (subCommandDef == null) {
-                return
-            }
-
-            if (result == null) {
-                result = subCommandDef
-            }
-            else {
-                throw new IllegalArgumentException("The command '${name}' exists in multiple groups")
-            }
+    /**
+     * Parse a list of arguments and returns an executor that can execute the logic.
+     *
+     * @param args List of arguments.
+     *
+     * @return An executor if parsing was successful.
+     *
+     * @throws CliException Thrown in case of parse errors.
+     */
+    SubCommandExecutor parse(List<String> args) throws CliException {
+        if (args == null) {
+            throw new IllegalArgumentException('args must not be null')
         }
 
-        return result
+        if (args.empty) {
+            return null
+        }
+
+        SubCommandDef subCommandDef = container.findSubCommand(args[0])
+        if (subCommandDef == null) {
+            throw new UnsupportedOperationException('Unknown subcommand is not implemented!')
+        }
+
+        List<String> subArgs = args
+        subArgs.remove(0)
+        OptionAccessor optionAccessor = subCommandDef.cliBuilder().parse(subArgs)
+        return subCommandDef.createExecutor(optionAccessor)
     }
 }

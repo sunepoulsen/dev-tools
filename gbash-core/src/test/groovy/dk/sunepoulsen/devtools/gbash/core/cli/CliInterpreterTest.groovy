@@ -1,95 +1,63 @@
 package dk.sunepoulsen.devtools.gbash.core.cli
 
-import spock.lang.Specification
+import groovy.cli.picocli.CliBuilder
+import spock.lang.Specification;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class CliInterpreterTest extends Specification {
-    void "Find sub command with groups equals null"() {
-        given: 'CliInterpreter with null groups'
-            CliInterpreter cliInterpreter = new CliInterpreter(groups: null)
+    private CliInterpreter cliInterpreter
+    private SubCommandContainer container
 
-        expect: 'find sub command'
-            cliInterpreter.findSubCommand('help') == null
+    private SubCommandDef subCommandDef
+    private SubCommandExecutor subCommandExecutor
+
+    void setup() {
+        this.container = Mock(SubCommandContainer)
+        this.cliInterpreter = new CliInterpreter(container: container)
+        this.subCommandDef = Mock(SubCommandDef)
+        this.subCommandExecutor = Mock(SubCommandExecutor)
     }
 
-    void "Find sub command in single group"() {
-        given: 'CliInterpreter with null groups'
-            CliInterpreter cliInterpreter = new CliInterpreter(groups: [])
+    void "Parsing null arguments"() {
+        when: 'parse null arguments'
+            cliInterpreter.parse(null)
 
-        and: 'has a single group of sub commands'
-            SubCommandGroup group = new SubCommandGroup()
-            cliInterpreter.getGroups().add(group)
+        then: 'expect exception'
+            thrown(IllegalArgumentException)
+            0 * container._
+            0 * subCommandDef._
+    }
 
-        and: 'has a sub command that the group'
-            SubCommandDef subCommandDef = Mock(SubCommandDef)
-            group.getSubCommands().add(subCommandDef)
-            group.getSubCommands().add(Mock(SubCommandDef))
-            group.getSubCommands().add(Mock(SubCommandDef))
-
-        when: 'find sub command'
-            SubCommandDef result = cliInterpreter.findSubCommand('help')
+    void "Parsing empty list of arguments"() {
+        when: 'parse empty list of arguments'
+            SubCommandExecutor result = cliInterpreter.parse([])
 
         then:
-            1 * subCommandDef.name() >> 'help'
-            result == subCommandDef
+            0 * container._
+            0 * subCommandDef._
+            result == null
     }
 
-    void "Find sub command across multiple groups"() {
-        given: 'CliInterpreter with null groups'
-            CliInterpreter cliInterpreter = new CliInterpreter(groups: [])
-
-        and: 'has a group with other sub commands'
-            SubCommandGroup group = new SubCommandGroup()
-            group.getSubCommands().add(Mock(SubCommandDef))
-            group.getSubCommands().add(Mock(SubCommandDef))
-            group.getSubCommands().add(Mock(SubCommandDef))
-            cliInterpreter.getGroups().add(group)
-
-        and: 'has a group with the sub command we are looking for'
-            group = new SubCommandGroup()
-            SubCommandDef subCommandDef = Mock(SubCommandDef)
-            cliInterpreter.getGroups().add(group)
-
-            group.getSubCommands().add(Mock(SubCommandDef))
-            group.getSubCommands().add(Mock(SubCommandDef))
-            group.getSubCommands().add(subCommandDef)
-            group.getSubCommands().add(Mock(SubCommandDef))
-
-        when: 'find sub command'
-            SubCommandDef result = cliInterpreter.findSubCommand('help')
+    void "Parse sub command successfully"() {
+        when:
+            SubCommandExecutor result = cliInterpreter.parse(['cmd'])
 
         then:
-            1 * subCommandDef.name() >> 'help'
-            result == subCommandDef
+            1 * container.findSubCommand(_) >> subCommandDef
+            1 * subCommandDef.cliBuilder() >> new CliBuilder()
+            1 * subCommandDef.createExecutor(_) >> subCommandExecutor
+            result == subCommandExecutor
     }
 
-    void "Find sub command that is added to multiple groups"() {
-        given: 'CliInterpreter with null groups'
-            CliInterpreter cliInterpreter = new CliInterpreter(groups: [])
-
-        and: 'a sub command'
-            SubCommandDef subCommandDef = Mock(SubCommandDef)
-
-        and: 'has one group with the sub commands'
-            SubCommandGroup group = new SubCommandGroup()
-            group.getSubCommands().add(Mock(SubCommandDef))
-            group.getSubCommands().add(subCommandDef)
-            group.getSubCommands().add(Mock(SubCommandDef))
-            cliInterpreter.getGroups().add(group)
-
-        and: 'has another group with the sub commands'
-            group = new SubCommandGroup()
-            group.getSubCommands().add(Mock(SubCommandDef))
-            group.getSubCommands().add(subCommandDef)
-            group.getSubCommands().add(Mock(SubCommandDef))
-            cliInterpreter.getGroups().add(group)
-
-        when: 'find sub command'
-            cliInterpreter.findSubCommand('help')
+    void "Parse sub command with illegal arguments"() {
+        when:
+            SubCommandExecutor result = cliInterpreter.parse(['cmd'])
 
         then:
-            2 * subCommandDef.name() >> 'help'
-            IllegalArgumentException ex = thrown(IllegalArgumentException)
-            ex.message == "The command 'help' exists in multiple groups"
+            1 * container.findSubCommand(_) >> subCommandDef
+            1 * subCommandDef.cliBuilder() >> new CliBuilder()
+            1 * subCommandDef.createExecutor(_) >> subCommandExecutor
+            result == subCommandExecutor
     }
-
 }
