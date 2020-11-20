@@ -1,4 +1,4 @@
-package dk.sunepoulsen.devtools.gbash.core.cli
+package dk.sunepoulsen.devtools.gbash.core.exceptions
 
 class CliException extends Exception {
     CliException(String message) {

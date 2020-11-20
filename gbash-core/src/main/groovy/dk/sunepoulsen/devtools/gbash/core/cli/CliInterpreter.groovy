@@ -1,5 +1,6 @@
 package dk.sunepoulsen.devtools.gbash.core.cli
 
+import dk.sunepoulsen.devtools.gbash.core.exceptions.CliException
 import groovy.cli.picocli.OptionAccessor
 
 /**
@@ -25,7 +26,7 @@ class CliInterpreter {
      *
      * @return An executor if parsing was successful.
      *
-     * @throws CliException Thrown in case of parse errors.
+     * @throws dk.sunepoulsen.devtools.gbash.core.exceptions.CliException Thrown in case of parse errors.
      */
     SubCommandExecutor parse(List<String> args) throws CliException {
         if (args == null) {
@@ -45,5 +46,16 @@ class CliInterpreter {
         subArgs.remove(0)
         OptionAccessor optionAccessor = subCommandDef.cliBuilder().parse(subArgs)
         return subCommandDef.createExecutor(optionAccessor)
+    }
+
+    void execute(String[] args) {
+        try {
+            SubCommandExecutor executor = parse(args.toList())
+            executor.execute()
+        }
+        catch( Exception ex ) {
+            System.out.newWriter().println(ex.getMessage())
+            ex.printStackTrace(System.out)
+        }
     }
 }
