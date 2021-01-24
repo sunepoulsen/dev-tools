@@ -1,5 +1,6 @@
 package dk.sunepoulsen.devtools.gbash.core.cli
 
+import dk.sunepoulsen.devtools.gbash.core.exceptions.CliException
 import groovy.cli.picocli.CliBuilder
 import groovy.cli.picocli.OptionAccessor
 

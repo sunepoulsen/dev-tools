@@ -1,5 +1,6 @@
 package dk.sunepoulsen.devtools.gbash.core.cli
 
+import dk.sunepoulsen.devtools.gbash.core.exceptions.CliException
 import groovy.cli.picocli.CliBuilder
 import groovy.cli.picocli.OptionAccessor
 
@@ -27,6 +28,6 @@ class HelpSubCommandDef implements SubCommandDef {
 
     @Override
     SubCommandExecutor createExecutor(OptionAccessor optionAccessor) throws CliException {
-        throw new UnsupportedOperationException('Not implemented yet!')
+        throw new UnsupportedOperationException('HelpSubCommandDef.createExecutor: Not implemented yet!')
     }
 }

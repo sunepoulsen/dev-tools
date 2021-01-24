@@ -1,9 +1,8 @@
 package dk.sunepoulsen.devtools.gbash.core.cli
 
+import dk.sunepoulsen.devtools.gbash.core.exceptions.CliException
 import groovy.cli.picocli.CliBuilder
-import spock.lang.Specification;
-
-import static org.junit.jupiter.api.Assertions.*;
+import spock.lang.Specification
 
 class CliInterpreterTest extends Specification {
     private CliInterpreter cliInterpreter
